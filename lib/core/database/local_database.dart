@@ -46,7 +46,11 @@ class Vitals extends Table {
 
 @DriftDatabase(tables: [Patients, OutboxQueue, Vitals])
 class MediReachDatabase extends _$MediReachDatabase implements OfflineOutboxRepository {
-  MediReachDatabase() : super(_openConnection());
+  MediReachDatabase._() : super(_openConnection());
+
+  static final MediReachDatabase _instance = MediReachDatabase._();
+
+  factory MediReachDatabase() => _instance;
 
   @override
   int get schemaVersion => 1;

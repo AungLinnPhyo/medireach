@@ -13,10 +13,13 @@ dependencies:
   flutter:
     sdk: flutter
   cupertino_icons: ^1.0.8
-  drift: ^2.34.0
+  drift: ^2.27.0
+  flutter_riverpod: 2.6.1
+  riverpod_annotation: 2.6.1
   supabase_flutter: ^2.14.2
   path_provider: ^2.1.5
   path: ^1.9.1
+  sqlite3_flutter_libs: ^0.5.24
 
   core_offline:
     path: D:/My Projects/Tamplates/core_offline
@@ -24,6 +27,7 @@ dependencies:
 dev_dependencies:
   flutter_test:
     sdk: flutter
+  riverpod_generator: ^2.6.1
 
   # The "flutter_lints" package below contains a set of recommended lints to
   # encourage good coding practices. The lint set provided by the package is
@@ -31,8 +35,8 @@ dev_dependencies:
   # package. See that file for information about deactivating specific lint
   # rules and activating additional ones.
   flutter_lints: ^6.0.0
-  drift_dev: ^2.33.0
-  build_runner: ^2.15.0
+  drift_dev: ^2.27.0
+  build_runner: ^2.5.4
 
 # The following section is specific to Flutter packages.
 flutter:
