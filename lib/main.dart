@@ -6,7 +6,7 @@ import 'package:supabase_flutter/supabase_flutter.dart';
 import 'core/database/local_database.dart';
 import 'core/processor/add_virals_processor.dart';
 import 'core/processor/register_patient_processor.dart';
-import 'features/patient/presentation/screens/home_screen.dart';
+import 'features/patient/presentation/screens/main_screen.dart';
 
 void main() async {
   WidgetsFlutterBinding.ensureInitialized();
@@ -33,7 +33,7 @@ class MyApp extends StatelessWidget {
     return MaterialApp(
       title: 'Flutter Demo',
       theme: ThemeData(colorScheme: ColorScheme.fromSeed(seedColor: Colors.deepPurple)),
-      home: const HomeScreen(),
+      home: const MainScreen(),
     );
   }
 }

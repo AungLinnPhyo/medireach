@@ -22,26 +22,44 @@ class PatientRepositoryImpl implements PatientRepository {
     try {
       final remoteData = await remoteDataSource.fetchPatientsFromServer();
 
-      // Drift Batch စနစ်ဖြင့် အုပ်စုလိုက် Cache လုပ်ခြင်း (Upsert)
-      await db.batch((batch) {
+      await db.transaction(() async {
         for (final raw in remoteData) {
-          batch.insert(
-            db.patients,
-            PatientsCompanion.insert(
-              serverId: Value(raw['id'] as int),
-              name: raw['name'],
-              age: raw['age'],
-              nrc: raw['nrc'],
-              phone: raw['phone'],
-              address: raw['address'],
-              syncStatus: const Value('synced'),
-            ),
-            mode: InsertMode.insertOrReplace,
-          );
+          final serverId = raw['id'] as int;
+          final nrc = raw['nrc'] as String;
+
+          final existingPatient = await (db.select(db.patients)..where((t) => t.serverId.equals(serverId) | t.nrc.equals(nrc))).getSingleOrNull();
+
+          if (existingPatient != null) {
+            await (db.update(db.patients)..where((t) => t.id.equals(existingPatient.id))).write(
+              PatientsCompanion(
+                serverId: Value(serverId),
+                name: Value(raw['name'] as String),
+                age: Value(raw['age'] as int),
+                nrc: Value(nrc),
+                phone: Value(raw['phone'] as String),
+                address: Value(raw['address'] as String),
+                syncStatus: const Value('synced'),
+              ),
+            );
+          } else {
+            await db
+                .into(db.patients)
+                .insert(
+                  PatientsCompanion.insert(
+                    serverId: Value(serverId),
+                    name: raw['name'] as String,
+                    age: raw['age'] as int,
+                    nrc: nrc,
+                    phone: raw['phone'] as String,
+                    address: raw['address'] as String,
+                    syncStatus: const Value('synced'),
+                  ),
+                );
+          }
         }
       });
     } catch (e) {
-      log("Cache Error: $e");
+      log('Cache Error: $e');
     }
   }
 
