@@ -27,9 +27,18 @@ class PatientRepositoryImpl implements PatientRepository {
           final serverId = raw['id'] as int;
           final nrc = raw['nrc'] as String;
 
-          final existingPatient = await (db.select(db.patients)..where((t) => t.serverId.equals(serverId) | t.nrc.equals(nrc))).getSingleOrNull();
+          final existingPatients = await (db.select(db.patients)..where((t) => t.serverId.equals(serverId) | t.nrc.equals(nrc))).get();
 
-          if (existingPatient != null) {
+          if (existingPatients.isNotEmpty) {
+            final existingPatient = existingPatients.firstWhere((patient) => patient.serverId == serverId, orElse: () => existingPatients.first);
+
+            if (existingPatients.length > 1) {
+              final duplicateIds = existingPatients.where((patient) => patient.id != existingPatient.id).map((patient) => patient.id).toList();
+              if (duplicateIds.isNotEmpty) {
+                await (db.delete(db.patients)..where((t) => t.id.isIn(duplicateIds))).go();
+              }
+            }
+
             await (db.update(db.patients)..where((t) => t.id.equals(existingPatient.id))).write(
               PatientsCompanion(
                 serverId: Value(serverId),
@@ -76,5 +85,15 @@ class PatientRepositoryImpl implements PatientRepository {
   @override
   Stream<List<OfflineOutboxItem>> watchOutboxQueue() {
     return localDataSource.watchOutbox();
+  }
+
+  @override
+  Future<void> deleteOutboxItem(int id) async {
+    await localDataSource.removeOutboxItem(id);
+  }
+
+  @override
+  Future<void> retryOutboxItem(int id) async {
+    await localDataSource.updateOutboxToRetry(id);
   }
 }

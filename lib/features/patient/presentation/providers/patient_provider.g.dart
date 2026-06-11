@@ -46,7 +46,7 @@ final outboxQueueStreamProvider =
 typedef OutboxQueueStreamRef =
     AutoDisposeStreamProviderRef<List<OfflineOutboxItem>>;
 String _$patientFormControllerHash() =>
-    r'd7ec80c403c1fef7cb261dffbdf4531a8f61ddac';
+    r'ce0bc7e9c2836a787bd4dd70bee3251a2aff7268';
 
 /// See also [PatientFormController].
 @ProviderFor(PatientFormController)

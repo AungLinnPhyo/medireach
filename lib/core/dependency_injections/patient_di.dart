@@ -45,3 +45,15 @@ FetchAndCachePatientsUseCase fetchAndCachePatientsUseCase(Ref ref) {
   final repository = ref.watch(patientRepositoryProvider);
   return FetchAndCachePatientsUseCase(repository);
 }
+
+@riverpod
+RetryOutboxItemUseCase retryOutboxItemUseCase(Ref ref) {
+  final repository = ref.watch(patientRepositoryProvider);
+  return RetryOutboxItemUseCase(repository);
+}
+
+@riverpod
+DeleteOutboxItemUseCase deleteOutboxItemUseCase(Ref ref) {
+  final repository = ref.watch(patientRepositoryProvider);
+  return DeleteOutboxItemUseCase(repository);
+}

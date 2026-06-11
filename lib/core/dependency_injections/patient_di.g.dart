@@ -104,5 +104,45 @@ final fetchAndCachePatientsUseCaseProvider =
 // ignore: unused_element
 typedef FetchAndCachePatientsUseCaseRef =
     AutoDisposeProviderRef<FetchAndCachePatientsUseCase>;
+String _$retryOutboxItemUseCaseHash() =>
+    r'45bb46b04cd7357ede4d139eda793b713f5d5a84';
+
+/// See also [retryOutboxItemUseCase].
+@ProviderFor(retryOutboxItemUseCase)
+final retryOutboxItemUseCaseProvider =
+    AutoDisposeProvider<RetryOutboxItemUseCase>.internal(
+      retryOutboxItemUseCase,
+      name: r'retryOutboxItemUseCaseProvider',
+      debugGetCreateSourceHash: const bool.fromEnvironment('dart.vm.product')
+          ? null
+          : _$retryOutboxItemUseCaseHash,
+      dependencies: null,
+      allTransitiveDependencies: null,
+    );
+
+@Deprecated('Will be removed in 3.0. Use Ref instead')
+// ignore: unused_element
+typedef RetryOutboxItemUseCaseRef =
+    AutoDisposeProviderRef<RetryOutboxItemUseCase>;
+String _$deleteOutboxItemUseCaseHash() =>
+    r'fd4b71cf757912f024d910a9ef8fc829a18268fc';
+
+/// See also [deleteOutboxItemUseCase].
+@ProviderFor(deleteOutboxItemUseCase)
+final deleteOutboxItemUseCaseProvider =
+    AutoDisposeProvider<DeleteOutboxItemUseCase>.internal(
+      deleteOutboxItemUseCase,
+      name: r'deleteOutboxItemUseCaseProvider',
+      debugGetCreateSourceHash: const bool.fromEnvironment('dart.vm.product')
+          ? null
+          : _$deleteOutboxItemUseCaseHash,
+      dependencies: null,
+      allTransitiveDependencies: null,
+    );
+
+@Deprecated('Will be removed in 3.0. Use Ref instead')
+// ignore: unused_element
+typedef DeleteOutboxItemUseCaseRef =
+    AutoDisposeProviderRef<DeleteOutboxItemUseCase>;
 // ignore_for_file: type=lint
 // ignore_for_file: subtype_of_sealed_class, invalid_use_of_internal_member, invalid_use_of_visible_for_testing_member, deprecated_member_use_from_same_package

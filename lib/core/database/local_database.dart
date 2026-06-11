@@ -1,4 +1,5 @@
 import 'dart:convert';
+import 'dart:developer';
 import 'dart:io';
 
 import 'package:core_offline/core_offline.dart';
@@ -61,7 +62,44 @@ class MediReachDatabase extends _$MediReachDatabase implements OfflineOutboxRepo
 
   @override
   Future<void> deleteOutboxItem(int id) async {
-    await (delete(outboxQueue)..where((t) => t.id.equals(id))).go();
+    await transaction(() async {
+      // ၁။ ဖျက်မည့် Outbox Item ကို အရင်ဆွဲထုတ်မည်
+      final row = await (select(outboxQueue)..where((t) => t.id.equals(id))).getSingleOrNull();
+
+      if (row != null) {
+        try {
+          final Map<String, dynamic> data = jsonDecode(row.payload);
+
+          // 📝 Debug Console တွင် ကြည့်ရှုရန် Log ထုတ်ခြင်း
+          log('⚙️ [MediReach] Deleting Outbox ID: $id | Action: ${row.actionType}');
+
+          if (row.actionType == 'register_patient') {
+            // 🌟 အားကိုးရဆုံး ပြင်ဆင်မှု: data['local_id'] ကို String ပြောင်းပြီးမှ tryParse လုပ်ခြင်းဖြင့်
+            // Type မကိုက်ညီသည့် ပြဿနာ (TypeError) ကို လုံးဝ ဖြေရှင်းပေးပါတယ်။
+            final localPatientId = int.tryParse(data['local_id']?.toString() ?? '');
+
+            log('⚙️ [MediReach] Found Connected Patient ID: $localPatientId');
+
+            if (localPatientId != null) {
+              // (က) Local Patients ဇယားထဲမှ လူနာကို ဖျက်ခြင်း
+              final deletedRows = await (delete(patients)..where((t) => t.id.equals(localPatientId))).go();
+
+              // (ခ) ၎င်းလူနာနှင့် သက်ဆိုင်သော Vitals များကိုပါ ဖျက်ခြင်း
+              await (delete(vitals)..where((t) => t.localPatientId.equals(localPatientId))).go();
+
+              log('⚙️ [MediReach] Successfully deleted local patient rows: $deletedRows');
+            }
+          }
+        } catch (e, stackTrace) {
+          // 🛑 အကယ်၍ တစ်ခုခု မှားယွင်းခဲ့ပါက မသိမသာ ငုံမထားတော့ဘဲ Console တွင် Error ကို အတိအကျ ပြခိုင်းခြင်း
+          log('🛑 [MediReach] Error inside deleteOutboxItem: $e');
+          log('Stacktrace: $stackTrace');
+        }
+      }
+
+      // ၂။ အထက်ပါလုပ်ငန်းစဉ် ပြီးဆုံးမှသာ Outbox Queue ထဲကပါ ဖျက်ထုတ်ပစ်မည်
+      await (delete(outboxQueue)..where((t) => t.id.equals(id))).go();
+    });
   }
 
   @override
@@ -120,8 +158,8 @@ class MediReachDatabase extends _$MediReachDatabase implements OfflineOutboxRepo
   // ==========================================
 
   Future<Patient?> getPatientById(int localId) async {
-  return await (select(patients)..where((t) => t.id.equals(localId))).getSingleOrNull();
-}
+    return await (select(patients)..where((t) => t.id.equals(localId))).getSingleOrNull();
+  }
 
   Future<void> registerPatientOffline(String name, String nrc, String phone, String address, int age) async {
     await transaction(() async {

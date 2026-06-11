@@ -50,4 +50,20 @@ class PatientFormController extends _$PatientFormController {
       await fetchUseCase();
     });
   }
+
+  Future<void> retryItem(int id) async {
+    state = const AsyncLoading();
+    state = await AsyncValue.guard(() async {
+      final retryUseCase = ref.read(retryOutboxItemUseCaseProvider);
+      await retryUseCase(id);
+    });
+  }
+
+  Future<void> deleteItem(int id) async {
+    state = const AsyncLoading();
+    state = await AsyncValue.guard(() async {
+      final deleteUseCase = ref.read(deleteOutboxItemUseCaseProvider);
+      await deleteUseCase(id);
+    });
+  }
 }

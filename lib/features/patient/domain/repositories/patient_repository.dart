@@ -6,4 +6,6 @@ abstract class PatientRepository {
   Stream<List<PatientEntity>> watchLocalPatients();
   Stream<List<OfflineOutboxItem>> watchOutboxQueue();
   Future<void> fetchAndCachePatients();
+  Future<void> retryOutboxItem(int id);
+  Future<void> deleteOutboxItem(int id);
 }
